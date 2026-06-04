@@ -1,5 +1,0 @@
-{
-  "input_file": "<class 'pathlib.PosixPath'>",
-  "name": "root",
-  "sysml2_visitor": "<class 'pysysml2.grammar.sysml2_model_visitor.ModelTreeSysML2Visitor'>"
-}

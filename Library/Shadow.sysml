@@ -6,7 +6,8 @@ library package ShadowLibrary {
     private import SI::*;
     private import USCustomaryUnits::*;
     part def Database {
-        port data_out[0..*] : DbPort;
+        out port data_out[1]: DbPort;
+        in port data_in[1]: DbPort;
         
     }
 
@@ -15,20 +16,19 @@ library package ShadowLibrary {
 
     connection def dbConnections{
         abstract attribute durationInDays_[2] : ScalarValues::Real;
-        assert constraint{
-            1==0
-        }
         end port db1:DbPort;
         end port db2:DbPort;
     }
 
 
     part def Shadow {
-        port sensor_ [0..*] : ~PhysicalTwinLibrary::Sensor;
+        in port sensor_ [0..*] : ~PhysicalTwinLibrary::Sensor;
         part relationalDatabases : RelationalDatabase[0..*];
         part keyValueDatabases : KeyValueDatabase[0..*];
         abstract connection dbconnections[0..*]:dbConnections;
     }
+
+    part shadow_:Shadow;
 
     part def RelationalDatabase specializes Database {
         
@@ -37,6 +37,8 @@ library package ShadowLibrary {
     part def KeyValueDatabase specializes Database {
         
     }
+
+    
     
     
     
