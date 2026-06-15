@@ -19,7 +19,7 @@ library package PhysicalTwinLibrary {
     }
 
     port def Sensor :> TwinPort {
-        out attribute measurements : ScalarValues::ScalarValue [1..*];
+        out attribute measurements : ScalarValues::ScalarValue [1];
 
     }
     
@@ -44,13 +44,29 @@ library package PhysicalTwinLibrary {
 
 
     
-    interface def Communication {
-        end source : TwinPort;
-        end target : ~TwinPort;
+    connection def Communication {
+        end port source : TwinPort;
+        end port target : TwinPort;
+
+        part communicationProtocoll[1]: CommunicationProtocoll;
+        abstract part mqtt_:MQTT:>communicationProtocoll;
+        abstract part http_:HTTP:>communicationProtocoll;
     }
 
-    abstract interface communication_:Communication;
+    part def CommunicationProtocoll {
+    }
+    part def MQTT:>CommunicationProtocoll{
+        attribute broker : ScalarValues::String;
+        attribute topic : ScalarValues::String;
+    }
+
+    part def HTTP:>CommunicationProtocoll{
+        attribute url : ScalarValues::String;
+    }
+
+
+    abstract connection communication_:Communication;
     
-
-
 }
+
+
