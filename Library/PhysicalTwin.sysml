@@ -1,71 +1,46 @@
 library package PhysicalTwinLibrary {
-    private import ScalarValues::*;
     private import Metaobjects::SemanticMetadata;
-    
-    
-    
+    private import TwinDataTypeLibrary::*;
+    private import TwinStateMachineLibrary::*;
+
     part def PhysicalTwin {
-        port sensors [0..*] : Sensor; 
-        state controlUnit_:ControlUnit;
-        port actuators [0..*] : Actuator;
-        part constComponents [0..*]: ConstAttributes;
-    
-    }
-
-
-
-    part def ConstAttributes{
-        attribute attributes [0..*] : ScalarValues::ScalarValue;
-    }
-
-    port def Sensor :> TwinPort {
-        out attribute measurements : ScalarValues::ScalarValue [1];
-
+        port  sensors [0..*] : Sensor;
+        part controlUnit_:CustomStateMachine;
+        port  actuators [0..*] : Actuator;
+        attribute constComponents[0..*] : TwinAttribute;
     }
     
-    port def Actuator :> TwinPort {
-        in attribute commandAttributes : ScalarValues::ScalarValue [1..*];
-
-       
+    port def TwinPort{
+        attribute communicationProtocol : CommunicationProtocol;
     }
-     port def TwinPort;
-
-    state def ControlUnit :>AbstractState{
-        state actions:ControlUnitState[0..*];
-    }
-
-    abstract state def AbstractState{
-        attribute attributes:ScalarValues::ScalarValue[0..*];
-    }
-
-    state def ControlUnitState:> AbstractState {
-
-    }
-
-
     
-    connection def Communication {
-        end port source : TwinPort;
-        end port target : TwinPort;
-
-        part communicationProtocoll[1]: CommunicationProtocoll;
-        abstract part mqtt_:MQTT:>communicationProtocoll;
-        abstract part http_:HTTP:>communicationProtocoll;
+    attribute def CommunicationProtocol {
+        
     }
 
-    part def CommunicationProtocoll {
+    attribute def HTTP_Protocol :> CommunicationProtocol {
+        attribute url : ScalarValues::String;
     }
-    part def MQTT:>CommunicationProtocoll{
+    attribute def MQTT_Protocol :> CommunicationProtocol {
         attribute broker : ScalarValues::String;
         attribute topic : ScalarValues::String;
     }
 
-    part def HTTP:>CommunicationProtocoll{
-        attribute url : ScalarValues::String;
+    attribute def Payload {
+        attribute jsonPath_ : ScalarValues::String;
+        attribute measurements[0..*] : TwinAttribute;
     }
 
+    port def Sensor :> TwinPort {
+        out attribute payloads[0..*]:Payload;
+    }
 
-    abstract connection communication_:Communication;
+    attribute payload_:Payload[0..*];
+
+    port def Actuator :> TwinPort {
+        in attribute payloads[0..*]:Payload;
+    }
+
     
 }
 
