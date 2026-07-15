@@ -138,6 +138,19 @@ library package TwinDataTypeLibrary {
 
     }
 
+    attribute def IntegerCalc :> TwinAttributeInteger {
+        in attribute left     : TwinAttributeInteger[1];
+        in attribute right    : TwinAttributeInteger[1];
+        in attribute operator : ArithmeticOperator[1];
+    }
+
+    attribute def RealCalc :> TwinAttributeReal {
+        in attribute left     : TwinAttributeReal[1];
+        in attribute right    : TwinAttributeReal[1];
+        in attribute operator : ArithmeticOperator[1];
+    }
+
+
     attribute def ComparisonCalc :> TwinAttributeBoolean {
         in attribute left     : TwinNumberAttribute[1];
         in attribute right    : TwinNumberAttribute[1];
