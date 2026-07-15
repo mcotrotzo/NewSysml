@@ -1,0 +1,158 @@
+@startuml
+class Twin
+Twin "1" *--> "1" PhysicalTwin
+Twin "1" *--> "1" Shadow
+Twin "1" *--> "1" DescriptiveModel
+Twin "1" *--> "1" PredictiveModel
+Twin "1" *--> "1" PrescrptiveModel
+
+' --- Physical structure ---
+class PhysicalTwin {
+    -sensors : Set<Sensor>
+    -actuators : Set<Actuator>
+}
+class Sensor {
+    -name : String
+    -sensorAttributes : Set<TwinSensorAttribute>
+}
+class Actuator {
+    -name : String
+    -actuatorAttributes : Set<TwinActuatorAttribute>
+}
+PhysicalTwin "1" *--> "*" Sensor
+PhysicalTwin "1" *--> "*" Actuator
+PhysicalTwin "1" *--> "*" ControlUnit
+
+' --- State machine (generic base) ---
+abstract class CustomStateMachine {
+}
+abstract class State {
+    -assignCommands : AssignCommand [0..*]
+}
+class Transition
+CustomStateMachine "1" *--> "1..*" State
+CustomStateMachine "1" *--> "0..*" Transition
+
+' --- Physical state machine ---
+class ControlUnit extends CustomStateMachine {
+    -states : Set<PhysicalState>
+}
+class PhysicalState extends State {
+    -localAttributes : Set<LocalAttributes>
+    -assignCommands : PhysicalAssignCommand [0..*]
+}
+
+' --- Descriptive state machine ---
+class DescriptiveStateMachine extends CustomStateMachine {
+    -states : Set<D_State>
+}
+class D_State extends State {
+    -localAttributes : Set<D_LocalAttributes>
+    -assignCommands : DescriptiveAssignCommand [0..*]
+}
+
+' --- Assign commands ---
+class AssignCommand {
+    -target : TwinAttribute
+    -source : TwinAttribute
+}
+class PhysicalAssignCommand extends AssignCommand {
+    -target : WriteAttributes
+    -source : TwinAttributes
+}
+
+' --- Descriptive model ---
+class DescriptiveModel {
+    -queries : Set<DescriptiveQuery>
+    -derivedAttributes : Set<DescriptiveAttributes>
+    -descriptiveStateMachine : DescriptiveStateMachine
+}
+class DescriptiveAssignCommand extends AssignCommand {
+    -target : DescriptiveWritable
+    -source : TwinAttributes
+}
+DescriptiveModel "1" *--> "*" DescriptiveQuery
+DescriptiveModel "1" *--> "*" DescriptiveAttributes
+DescriptiveModel "1" *--> "0..1" DescriptiveStateMachine
+
+' --- Shadow model ---
+class Shadow {
+    -databases : Set<Database>
+}
+class Database {
+    -durationInDays : Integer
+}
+class RelationalDatabase extends Database
+class KeyValueDatabase extends Database
+Shadow "1" *--> "*" Database
+
+' --- Predictive model ---
+class PredictiveModel {
+    -strategies : Set<PredictiveStrategy>
+}
+class PredictiveStrategy {
+    -triggerConfig : TriggerConfiguration
+    -inputAttributes : Set<TwinAttributes>
+    -lambdaPath : String
+    -outputAttributes : Set<TwinAttributes>
+}
+PredictiveModel "1" *--> "*" PredictiveStrategy
+
+' --- Prescriptive model ---
+class PrescrptiveModel {
+    -strategies : Set<PrescriptiveStrategy>
+}
+class PrescriptiveStrategy {
+    -triggerConfig : TriggerConfiguration
+    -condition : TwinAttributes
+    -inputAttributes : Set<TwinAttributes>
+}
+class CustomPrescriptiveStrategy extends PrescriptiveStrategy {
+    -lambdaPath : String
+    -outputAttributes : Set<TwinAttributes>
+}
+class SendToActuatorStrategy extends PrescriptiveStrategy {
+    -actuatorTarget : TwinAttributes
+    -commandValue : TwinAttributes
+}
+PrescrptiveModel "1" *--> "*" PrescriptiveStrategy
+
+class TriggerConfiguration
+
+' --- Access levels ---
+interface ACCEES_LEVEL
+class ReadAttributes
+class WriteAttributes
+ACCEES_LEVEL <|-- ReadAttributes
+ACCEES_LEVEL <|-- WriteAttributes
+
+' --- Descriptive writable marker ---
+interface DescriptiveWritable
+WriteAttributes <|-- DescriptiveWritable
+
+' --- Attribute hierarchy ---
+class TwinAttributes {
+    -name : String
+}
+class LocalAttributes
+class D_LocalAttributes
+class PhysicalAttributes
+class TwinSensorAttribute
+class TwinActuatorAttribute
+class DescriptiveQuery
+class DescriptiveAttributes
+
+TwinAttributes <|-- LocalAttributes
+WriteAttributes <|-- LocalAttributes
+TwinAttributes <|-- D_LocalAttributes
+DescriptiveWritable <|-- D_LocalAttributes
+TwinAttributes <|-- PhysicalAttributes
+PhysicalAttributes <|-- TwinSensorAttribute
+PhysicalAttributes <|-- TwinActuatorAttribute
+ReadAttributes <|-- TwinSensorAttribute
+WriteAttributes <|-- TwinActuatorAttribute
+TwinAttributes <|-- DescriptiveQuery
+ReadAttributes <|-- DescriptiveQuery
+TwinAttributes <|-- DescriptiveAttributes
+DescriptiveWritable <|-- DescriptiveAttributes
+@enduml
