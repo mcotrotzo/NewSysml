@@ -113,6 +113,10 @@ package Test {
                     }
                 }
             }
+            connection t2:>transitions{
+                end :>>fromState ::> charge;
+                end :>>toState ::> idle;
+            }
         }
 
     }
