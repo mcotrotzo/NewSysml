@@ -3,66 +3,63 @@ package Test {
     private import PhysicalTwinLibrary::*;
     private import TwinStateMachineLibrary::*;
     private import TwinDataTypeLibrary::*;
-    private import CustomLibrary::*;
+  
   
 
-    attribute def Position:>CustomAttribute{
-        attribute x:TwinInteger:>members;
-        attribute y:TwinInteger:>members;
-        attribute z:TwinInteger:>members;
-        attribute test:ScalarValues::Integer;
+    attribute def Position:>CustomAttribute_{
+        attribute x:TwinAttributeInteger;
+        attribute y:TwinAttributeInteger;
+        attribute z:TwinAttributeInteger;
+        
+
     }
 
-    action def GreaterPosition :> TransitionGuardFunction {
-        attribute posx : Position :> inputs;
-        attribute posy : Position :> inputs;
-        attribute isGreater : TwinBoolean :> bOutput;
+    attribute def PositionList:>CustomAttributeList_{
+        :>> elements : Position;
+    }
 
-        :>> body : SEQ {
-            step1 :> cs : LOCAL_VAR { attribute x_greater : TwinBoolean { :>> value = false; } }
-            step2 :> cs : LOCAL_VAR { attribute y_greater : TwinBoolean { :>> value = false; } }
-            step3 :> cs : LOCAL_VAR { attribute z_greater : TwinBoolean { :>> value = false; } }
-            step4 :> cs : LOCAL_VAR { attribute xy_or : TwinBoolean; }
-
-            step5 :> cs : ASSIGN {
-                :> target = step1.x_greater;
-                :> source = GREATER_THAN_INT(posx.x, posy.x);
-            }
-            step6 :> cs : ASSIGN {
-                :> target = step2.y_greater;
-                :> source = GREATER_THAN_INT(posx.y, posy.y);
-            }
-            step7 :> cs : ASSIGN {
-                :> target = step3.z_greater;
-                :> source = GREATER_THAN_INT(posx.z, posy.z);
-            }
-
-            step8 :> cs : ASSIGN {
-                :> target = step4.xy_or;
-                :> source = OR(step1.x_greater, step2.y_greater);
-            }
-
-            step9 :> cs : ASSIGN {
-                :> target = isGreater;
-                :> source = OR(step4.xy_or, step3.z_greater);
-            }
+    attribute def AddPosition:>Position{
+        in attribute l:Position;
+        in attribute r:Position;
+        :>> x : NumericCalc {
+            :> left = l.x;
+            :> right = r.x;
+            :> operator = ArithmeticOperator::ADD;
+        }
+        :>> y : NumericCalc {
+            :> left = l.y;
+            :> right = r.y;
+            :> operator = ArithmeticOperator::ADD;
+        }
+        :>> z : NumericCalc {
+            :> left = l.z;
+            :> right = r.z;
+            :> operator = ArithmeticOperator::ADD;
         }
     }
+
     
     part def Battery:>PhysicalTwin{
         port p11:>sensors{
-            attribute temp:TwinReal:>measurements;
-            attribute voltage:TwinReal:>measurements;
+            attribute temp:TwinAttributeReal:>measurements;
+            attribute voltage:TwinAttributeReal:>measurements;
+            attribute positionList:PositionList:>measurements;
+            attribute position2:Position:>measurements;
+            attribute position3:Position:>measurements;
+            attribute position4:AddPosition:>measurements{
+                :>l = position2;
+                :>r = position3;
+            }
 
         }
         port coolingSystem:>actuators{
-            attribute fanSpeed:TwinInteger:>commands;
-            attribute coolantFlow:TwinReal:>commands;
+            attribute fanSpeed:TwinAttributeInteger:>commands;
+            attribute coolantFlow:TwinAttributeReal:>commands;
         }
 
         port chargingSystem[2]:>actuators{
-            attribute chargeCurrent:TwinReal:>commands;
-            attribute chargeVoltage:TwinReal:>commands;
+            attribute chargeCurrent:TwinAttributeReal:>commands;
+            attribute chargeVoltage:TwinAttributeReal:>commands;
         }
 
         port chargingSystem1:>chargingSystem{
@@ -71,10 +68,10 @@ package Test {
         }
         
 
-        attribute batteryID:TwinString:>constAttributes{
+        attribute batteryID:TwinAttributeString:>constAttributes{
             :>value = "BATTERY_001";
         }
-        attribute batteryCapacity:TwinReal:>constAttributes{
+        attribute batteryCapacity:TwinAttributeReal:>constAttributes{
             :>value = 100.0;
         }
 
@@ -107,13 +104,12 @@ package Test {
                 end :>>toState ::> charge;
 
                 part guard1:>guardCondition_{
-                    :>statements:GreaterPosition{
-                        :>posx = batteryPosition;
-                        :>posy {
-                            :>x.value = 5;
-                            :>y.value = 15;
-                            :>z.value = 25;
+                    :>triggerCondition_:ComparisonCalc{
+                        :>left = p11.temp;
+                        :>right{
+                            :>>value = 30.0;
                         }
+                        :>operator = ComparisonOperator::GREATER_THAN;
                     }
                 }
             }

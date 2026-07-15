@@ -1,20 +1,12 @@
 library package TwinStateMachineLibrary {
     private import TwinDataTypeLibrary::*;
-    private import CustomLibrary::*;
     
     abstract part def State {
         perform action assignActions_:ASSIGN[0..*];
     }
 
     part def TransitionConstraint {
-        private attribute triggerCondition_ : TwinBoolean[1];
-        action statements : TransitionGuardFunction[1];
-        bind triggerCondition_ = statements.bOutput;
-    }
-
-    action def TransitionGuardFunction:>CustomFunction {
-        in attribute :>> inputs:TwinAttribute[0..*];
-        out attribute bOutput:>> outputs:TwinBoolean[1];
+        attribute triggerCondition_ : TwinAttributeBoolean[1];
     }
 
     connection def TransitionConnection {
@@ -40,17 +32,17 @@ library package TwinStateMachineLibrary {
     }
 
     part def TimeBasedConfiguration :> TriggerConfiguration {
-        attribute triggerInterval_ : TwinInteger[1];
+        attribute triggerInterval_ : TwinAttributeInteger[1];
         attribute triggerIntervalUnit_ : TimeUnit[1];
     }
 
     part def EventBasedConfiguration :> TriggerConfiguration {
         attribute triggeringAtributes_ : TwinAttribute[0..*];
-        attribute onChange_ : TwinBoolean[1];
+        attribute onChange_ : TwinAttributeBoolean[1];
     }
 
     part def CustomStateMachine {
-        constant attribute currentState : TwinString[1];
+        constant attribute currentState : TwinAttributeString[1];
         part states : State[1..*];
         abstract connection transitions : TransitionConnection[0..*];
         part triggerConfig_ : TriggerConfiguration[0..1];

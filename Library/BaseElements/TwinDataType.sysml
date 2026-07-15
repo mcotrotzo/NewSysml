@@ -1,108 +1,215 @@
 library package TwinDataTypeLibrary {
 
     private import ScalarValues::*;
-    private import ScalarFunctions::*;
+
 
     abstract attribute def TwinAttribute {
-        attribute value : ScalarValues::ScalarValue;
+        abstract attribute value[0..*];
     }
 
-    abstract attribute def TwinNumber :> TwinAttribute {
-        attribute :>> value : ScalarValues::NumericalValue;
+    abstract attribute def TwinPrimitiveAttribute :> TwinAttribute {
     }
 
-    attribute def TwinInteger :> TwinNumber {
-        attribute :>> value : ScalarValues::Integer;
-    }
-    attribute def TwinReal :> TwinNumber {
-        attribute :>> value : ScalarValues::Real;
-    }
-    attribute def TwinBoolean :> TwinAttribute {
-        attribute :>> value : ScalarValues::Boolean;
-    }
-    attribute def TwinString :> TwinAttribute {
-        attribute :>> value : ScalarValues::String;
+    abstract attribute twinAttributes[0..*] : TwinAttribute;
+
+
+    attribute def TwinAttributeBoolean :> TwinPrimitiveAttribute {
+        :>> value[0..1] : ScalarValues::Boolean;
     }
 
-    abstract calc def TwinCalcs;
+    abstract attribute def TwinNumberAttribute :> TwinPrimitiveAttribute {
+        :>> value[0..1] : ScalarValues::Number;
+    }
 
-    calc def PLUS_INT:>TwinCalcs { in x: TwinInteger; in y: TwinInteger; return result: TwinInteger; new TwinInteger(value = x.value + y.value) }
-    calc def MINUS_INT:>TwinCalcs { in x: TwinInteger; in y: TwinInteger; return result: TwinInteger; new TwinInteger(value = x.value - y.value) }
-    calc def MULTIPLY_INT:>TwinCalcs { in x: TwinInteger; in y: TwinInteger; return result: TwinInteger; new TwinInteger(value = x.value * y.value) }
-    calc def DIVIDE_INT:>TwinCalcs { in x: TwinInteger; in y: TwinInteger; return result: TwinInteger; CAST_TO_INT(new TwinReal(value = x.value / y.value))}
+    attribute def TwinAttributeInteger :> TwinNumberAttribute {
+        :>> value : ScalarValues::Integer;
+    }
 
-    calc def PLUS_REAL:>TwinCalcs { in x: TwinReal; in y: TwinReal; return result: TwinReal; new TwinReal(value = x.value + y.value) }
-    calc def MINUS_REAL:>TwinCalcs { in x: TwinReal; in y: TwinReal; return result: TwinReal; new TwinReal(value = x.value - y.value) }
-    calc def MULTIPLY_REAL:>TwinCalcs { in x: TwinReal; in y: TwinReal; return result: TwinReal; new TwinReal(value = x.value * y.value) }
-    calc def DIVIDE_REAL:>TwinCalcs { in x: TwinReal; in y: TwinReal; return result: TwinReal; new TwinReal(value = x.value / y.value) }
+    attribute def TwinAttributeReal :> TwinNumberAttribute {
+        :>> value : ScalarValues::Real;
+    }
 
-    calc def NEGATE_INT:>TwinCalcs { in x: TwinInteger; return result: TwinInteger; new TwinInteger(value = -x.value) }
-    calc def NEGATE_REAL:>TwinCalcs { in x: TwinReal; return result: TwinReal; new TwinReal(value = -x.value) }
+    attribute def TwinAttributeString :> TwinPrimitiveAttribute {
+        :>> value[0..1] : ScalarValues::String;
+    }
 
-    calc def EQUAL_INT:>TwinCalcs { in x: TwinInteger; in y: TwinInteger; return result: TwinBoolean; new TwinBoolean(value = x.value == y.value) }
-    calc def NOT_EQUAL_INT:>TwinCalcs { in x: TwinInteger; in y: TwinInteger; return result: TwinBoolean; new TwinBoolean(value = x.value != y.value) }
-    calc def LESS_THAN_INT:>TwinCalcs { in x: TwinInteger; in y: TwinInteger; return result: TwinBoolean; new TwinBoolean(value = x.value < y.value) }
-    calc def GREATER_THAN_INT:>TwinCalcs { in x: TwinInteger; in y: TwinInteger; return result: TwinBoolean; new TwinBoolean(value = x.value > y.value) }
-    calc def LESS_THAN_EQUAL_INT:>TwinCalcs { in x: TwinInteger; in y: TwinInteger; return result: TwinBoolean; new TwinBoolean(value = x.value <= y.value) }
-    calc def GREATER_THAN_EQUAL_INT:>TwinCalcs { in x: TwinInteger; in y: TwinInteger; return result: TwinBoolean; new TwinBoolean(value = x.value >= y.value) }
+    attribute def TwinAttributeTimestamp :> TwinAttributeInteger {
+    }
 
-    calc def EQUAL_REAL:>TwinCalcs { in x: TwinReal; in y: TwinReal; return result: TwinBoolean; new TwinBoolean(value = x.value == y.value) }
-    calc def NOT_EQUAL_REAL:>TwinCalcs { in x: TwinReal; in y: TwinReal; return result: TwinBoolean; new TwinBoolean(value = x.value != y.value) }
-    calc def LESS_THAN_REAL:>TwinCalcs { in x: TwinReal; in y: TwinReal; return result: TwinBoolean; new TwinBoolean(value = x.value < y.value) }
-    calc def GREATER_THAN_REAL:>TwinCalcs { in x: TwinReal; in y: TwinReal; return result: TwinBoolean; new TwinBoolean(value = x.value > y.value) }
-    calc def LESS_THAN_EQUAL_REAL:>TwinCalcs { in x: TwinReal; in y: TwinReal; return result: TwinBoolean; new TwinBoolean(value = x.value <= y.value) }
-    calc def GREATER_THAN_EQUAL_REAL:>TwinCalcs { in x: TwinReal; in y: TwinReal; return result: TwinBoolean; new TwinBoolean(value = x.value >= y.value) }
+    attribute def TwinAttributeBit :> TwinAttributeBoolean {
+    }
 
-    calc def MOD:>TwinCalcs { in x: TwinInteger; in y: TwinInteger; return result: TwinInteger; new TwinInteger(value = x.value % y.value) }
-    calc def INC:>TwinCalcs { in x: TwinInteger; return result: TwinInteger; new TwinInteger(value = x.value + 1) }
-    calc def DEC:>TwinCalcs { in x: TwinInteger; return result: TwinInteger; new TwinInteger(value = x.value - 1) }
 
-    calc def AND:>TwinCalcs { in x: TwinBoolean; in y: TwinBoolean; return result: TwinBoolean; new TwinBoolean(value = x.value and y.value) }
-    calc def OR:>TwinCalcs { in x: TwinBoolean; in y: TwinBoolean; return result: TwinBoolean; new TwinBoolean(value = x.value or y.value) }
-    calc def NOT:>TwinCalcs { in x: TwinBoolean; return result: TwinBoolean; new TwinBoolean(value = not x.value) }
+    attribute def TwinAttributeEnum :> TwinAttribute {
+        attribute enumOptions[0..*] : TwinAttributeString;
+        :>> value[1] : TwinAttributeString default new TwinAttributeString(value = "");
+    }
 
-    calc def STRING_CONCAT:>TwinCalcs { in x: TwinString; in y: TwinString; return result: TwinString; new TwinString(value = x.value + y.value) }
-    calc def STRING_EQUAL:>TwinCalcs { in x: TwinString; in y: TwinString; return result: TwinBoolean; new TwinBoolean(value = x.value == y.value) }
-    calc def STRING_NOT_EQUAL:>TwinCalcs { in x: TwinString; in y: TwinString; return result: TwinBoolean; new TwinBoolean(value = x.value != y.value) }
-    calc def STRING_LESS_THAN:>TwinCalcs { in x: TwinString; in y: TwinString; return result: TwinBoolean; new TwinBoolean(value = x.value < y.value) }
-    calc def STRING_GREATER_THAN:>TwinCalcs { in x: TwinString; in y: TwinString; return result: TwinBoolean; new TwinBoolean(value = x.value > y.value) }
+    attribute def CustomAttribute_ :> TwinAttribute {
+        :>> value[0..*] : TwinAttribute;
+    }
+    attribute def CustomAttributeList_ :> TwinAttributeList {
+        :>> elements[0..*] : CustomAttribute_;
+        
+    }
 
-    calc def CAST_TO_INT:>TwinCalcs { in x: TwinReal; return result: TwinInteger; new TwinInteger(value = x.value as ScalarValues::Integer) }
-    calc def CAST_TO_REAL:>TwinCalcs { in x: TwinInteger; return result: TwinReal; new TwinReal(value = x.value as ScalarValues::Real) }
-    calc def CAST_NUMBER_TO_BOOL:>TwinCalcs { in x: TwinNumber; return result: TwinBoolean; new TwinBoolean(value = x.value != 0) }
-    calc def CAST_STRING_TO_BOOL:>TwinCalcs { in x: TwinString; return result: TwinBoolean; new TwinBoolean(value = x.value == "true" or x.value == "TRUE") }
+    abstract attribute def TwinAttributeList :> TwinAttribute {
+        abstract attribute elements[0..*] : TwinAttribute;
+        attribute size[0..1] : ScalarValues::Integer;
+    }
 
-    action def GET_AT { in ref array: TwinAttribute[0..*] ordered; in index: TwinInteger; out result: TwinAttribute; }
-    action def SET_AT { inout ref array: TwinAttribute[0..*] ordered; in index: TwinInteger; in value: TwinAttribute; }
-    action def APPEND  { inout ref array: TwinAttribute[0..*] ordered; in value: TwinAttribute; }
-    action def LENGTH  { in array: TwinAttribute[0..*] ordered; out result: TwinInteger; }
+    abstract attribute def TwinPrimitiveAttributeList :> TwinAttributeList {
+        :>> elements : TwinPrimitiveAttribute;
+    }
+
+    abstract attribute def TwinNumberList :> TwinPrimitiveAttributeList {
+        :>> elements : TwinNumberAttribute;
+    }
+
+    attribute def TwinRealList :> TwinNumberList {
+        :>> elements : TwinAttributeReal;
+    }
+
+    attribute def TwinIntegerList :> TwinNumberList {
+        :>> elements : TwinAttributeInteger;
+    }
+
+    attribute def TwinBooleanList :> TwinPrimitiveAttributeList {
+        :>> elements : TwinAttributeBoolean;
+    }
+
+    attribute def TwinStringList :> TwinPrimitiveAttributeList {
+        :>> elements : TwinAttributeString;
+    }
 
     
-    public abstract action def STATEMENT;
 
-    public action def ASSIGN :> STATEMENT { 
-        inout ref target: TwinAttribute; 
-        in source: TwinAttribute; 
-        assign target := source; 
+   
+    enum def ArithmeticOperator {
+        ADD; SUBTRACT; MULTIPLY; DIVIDE; MODULO;
     }
 
-    public action def SEQ :> STATEMENT { 
-        action cs: STATEMENT[1..*]; 
+    enum def BooleanAggregationOperator {
+        ANY; ALL;
+    }
+    enum def ArithmeticAggregationOperator {
+        SUM; AVERAGE; MIN; MAX; STDDEV; VARIANCE;
+    }
+    enum def StringAggregationOperator {
+        DISTINCT_COUNT;
     }
 
-    public action def LOCAL_VAR :> STATEMENT {
-        attribute variable: TwinAttribute[1];
+
+    enum def ComparisonOperator {
+        GREATER_THAN; GREATER_EQUAL; LESS_THAN; LESS_EQUAL;
     }
 
-    public action def WHILE_LOOP :> STATEMENT {
-        in condition: TwinBoolean;
-        action body: STATEMENT;
+   
+    enum def EqualityOperator {
+        EQUAL; NOT_EQUAL;
     }
 
-    public action def IF_ELSE :> STATEMENT {
-        in condition: TwinBoolean;
-        action thenBlock: STATEMENT;
-        action elseBlock: STATEMENT;
+    enum def LogicalOperator {
+        AND; OR; XOR; NOT;
+    }
+
+    enum def StringOperator {
+        CONCAT;
+    }
+
+    enum def StringPredicateOperator {
+        CONTAINS; STARTS_WITH; ENDS_WITH;
+    }
+
+    enum def TimeUnit {
+        SECONDS; MINUTES; HOURS; DAYS; YEARS;
+    }
+
+    enum def ORDER_BY {
+        ASCENDING; DESCENDING;
+    }
+
+    
+
+    attribute def NumericCalc :> TwinNumberAttribute {
+        in attribute left     : TwinNumberAttribute[1];
+        in attribute right    : TwinNumberAttribute[1];
+        in attribute operator : ArithmeticOperator[1];
+
+    }
+
+    attribute def ComparisonCalc :> TwinAttributeBoolean {
+        in attribute left     : TwinNumberAttribute[1];
+        in attribute right    : TwinNumberAttribute[1];
+        in attribute operator : ComparisonOperator[1];
+    }
+
+    attribute def EqualityCalc :> TwinAttributeBoolean {
+        in attribute left     : TwinPrimitiveAttribute[1];
+        in attribute right    : TwinPrimitiveAttribute[1];
+        in attribute operator : EqualityOperator[1];
+    }
+
+    attribute def LogicalCalc :> TwinAttributeBoolean {
+        in attribute left     : TwinAttributeBoolean[1];
+        in attribute right    : TwinAttributeBoolean[0..1];
+        in attribute operator : LogicalOperator[1];
+    }
+
+    attribute def StringCalc :> TwinAttributeString {
+        in attribute left     : TwinAttributeString[1];
+        in attribute right    : TwinAttributeString[1];
+        in attribute operator : StringOperator[1];
+    }
+
+    attribute def StringPredicateCalc :> TwinAttributeBoolean {
+        in attribute left     : TwinAttributeString[1];
+        in attribute right    : TwinAttributeString[1];
+        in attribute operator : StringPredicateOperator[1];
+    }
+
+
+    attribute def ListArithmeticCalc :> TwinNumberList {
+        in attribute left     : TwinNumberList[1];
+        in attribute right    : TwinNumberList[1];
+        in attribute operator : ArithmeticOperator[1];
+    }
+
+    attribute def ListEqualityCalc :> TwinBooleanList {
+        in attribute left     : TwinPrimitiveAttributeList[1];
+        in attribute right    : TwinPrimitiveAttributeList[1];
+        in attribute operator : EqualityOperator[1];
+    }
+
+    attribute def ListComparisonCalc :> TwinBooleanList {
+        in attribute left     : TwinNumberList[1];
+        in attribute right    : TwinNumberList[1];
+        in attribute operator : ComparisonOperator[1];
+    }
+
+    attribute def ListAggregationCalc :> TwinNumberAttribute {
+        in attribute list     : TwinNumberList[1];
+        in attribute operator : ArithmeticAggregationOperator[1];
+    }
+
+    attribute def ListBooleanAggregationCalc :> TwinAttributeBoolean {
+        in attribute list     : TwinBooleanList[1];
+        in attribute operator : BooleanAggregationOperator[1];
+    }
+    attribute def ListStringAggregationCalc :> TwinAttributeString {
+        in attribute list     : TwinStringList[1];
+        in attribute operator : StringAggregationOperator[1];
+    }
+    attribute def ListCountCalc :> TwinAttributeInteger {
+        in attribute list     : TwinAttributeList[1];
+    }
+
+    action def ASSIGN{
+        in ref target:TwinAttribute;
+        in ref source:TwinAttribute;
+
+        assign target := source;
+    
     }
 
 }

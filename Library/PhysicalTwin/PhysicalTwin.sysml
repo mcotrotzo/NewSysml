@@ -13,11 +13,11 @@ library package PhysicalTwinLibrary {
     }
 
     attribute def HTTP_Protocol :> CommunicationProtocol {
-        attribute url : TwinString;
+        attribute url : TwinAttributeString;
     }
     attribute def MQTT_Protocol :> CommunicationProtocol {
-        attribute broker : TwinString;
-        attribute topic : TwinString;
+        attribute broker : TwinAttributeString;
+        attribute topic : TwinAttributeString;
     }
 
     port def TwinPort{
