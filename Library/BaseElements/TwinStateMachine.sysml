@@ -8,9 +8,8 @@ library package TwinStateMachineLibrary {
 
     part def TransitionConstraint {
         private attribute triggerCondition_ : TwinBoolean[1];
-        action statements:TransitionGuardFunction[1]{
-            private out attribute :>>bOutput = triggerCondition_;
-        }
+        action statements : TransitionGuardFunction[1];
+        bind triggerCondition_ = statements.bOutput;
     }
 
     action def TransitionGuardFunction:>CustomFunction {
