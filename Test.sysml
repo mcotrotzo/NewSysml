@@ -98,7 +98,11 @@ package Test {
                 
             }
 
-            connection t1:>transitions{
+            part state2 :>states{
+                
+            }
+
+            flow t1:>transitions{
                 end :>>fromState ::> idle;
                 end :>>toState ::> charge;
 
@@ -113,9 +117,9 @@ package Test {
                     }
                 }
             }
-            connection t2:>transitions{
+            flow t2:>transitions{
                 end :>>fromState ::> charge;
-                end :>>toState ::> idle;
+                end :>>toState ::> state2;
             }
         }
 

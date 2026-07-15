@@ -17,7 +17,7 @@ library package TwinStateMachineLibrary {
         out attribute bOutput:>> outputs:TwinBoolean[1];
     }
 
-    connection def TransitionConnection {
+    flow def TransitionConnection {
         end part fromState : State;
         end part toState : State;
         part guardCondition_ : TransitionConstraint[1]; 
