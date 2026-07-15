@@ -33,12 +33,6 @@ library package TwinDataTypeLibrary {
         :>> value[0..1] : ScalarValues::String;
     }
 
-    attribute def TwinAttributeTimestamp :> TwinAttributeInteger {
-    }
-
-    attribute def TwinAttributeBit :> TwinAttributeBoolean {
-    }
-
 
     attribute def TwinAttributeEnum :> TwinAttribute {
         attribute enumOptions[0..*] : TwinAttributeString;

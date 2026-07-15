@@ -22,16 +22,6 @@ library package TwinStateMachineLibrary {
         
     }
 
-    enum def TimeUnit {
-        enum SECONDS;
-        enum MILLISECONDS;
-        enum MINUTES;
-        enum HOURS;
-        enum DAYS;
-        enum WEEKS;
-        enum MONTHS;
-        enum YEARS;
-    }
 
     part def TimeBasedConfiguration :> TriggerConfiguration {
         attribute triggerInterval_ : ScalarValues::Integer[1];
@@ -48,6 +38,7 @@ library package TwinStateMachineLibrary {
         part states : State[1..*];
         abstract connection transitions : TransitionConnection[0..*];
         part triggerConfig_ : TriggerConfiguration[0..1];
+        attribute local_Attributes : TwinAttribute[0..*];
     }
 
 }

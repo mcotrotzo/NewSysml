@@ -3,8 +3,12 @@ package Test {
     private import PhysicalTwinLibrary::*;
     private import TwinStateMachineLibrary::*;
     private import TwinDataTypeLibrary::*;
+    private import ShadowLibrary::*;
+    private import DescriptiveModelLibrary::*;
+    private import PredicitiveLibrary::*;
+    private import PrescriptiveModelLibrary::*;
 
-  
+
     attribute def Position:>CustomAttribute_{
         attribute x:TwinAttributeInteger;
         attribute y:TwinAttributeInteger;
@@ -76,6 +80,7 @@ package Test {
 
         part cm1:>controlUnit{
             part charge :>states{
+                
                 assign1:>assignActions_ = new ASSIGN(target = batteryPosition, source = new Position(x = new TwinAttributeInteger(value = 100), y = new TwinAttributeInteger(value = 200), z = new TwinAttributeInteger(value = 300)));
             }
 
@@ -100,4 +105,80 @@ package Test {
             }
         }
     }
+
+    part def Shadow1:>ShadowLibrary::Shadow{
+        part db1:>databases:RelationalDatabase{
+            :>> durationInDays = 2;
+        }
+        part db2:>databases:RelationalDatabase{
+            :>> durationInDays = 10;
+        }
+    }
+
+    part def DescriptiveModel1:>DescriptiveModel{
+        attribute temp30:TwinAttributeReal :>queries_ = new SingleNumberQuery(
+            twinAttribute_ = Battery::p11.temp,
+            selector = ValueSelector::LAST,
+            since = 10,
+            since_unit = TimeUnit::SECONDS,
+            order_by = ORDER_BY::DESCENDING,
+            limit = 30,
+            filter_expressions = new ComparisonCalc(left = Battery::p11.temp));
+
+
+        cm2:>descriptiveStateMachine_{
+            localTemp:TwinAttributeReal :>local_Attributes;
+            part state1:>states{
+                assign1:>assignActions_ = new ASSIGN(target=localTemp, source = new Position(x = new TwinAttributeInteger(value = 10), y = new TwinAttributeInteger(value = 20), z = new TwinAttributeInteger(value = 30)));
+            }
+            part state2:>states{
+            }
+
+            connection t1:>transitions{
+                end :>>fromState ::> state1;
+                end :>>toState ::> state2;
+
+                part guard1:>guardCondition_{
+                    :>> triggerCondition_ = new ComparisonCalc(
+                        left = temp30,
+                        right = temp30
+                    );
+                }
+            }
+        }
+
+    }
+
+    part def P1:>PredictiveModel{
+        s1:>strategies{
+            temp :>inputAttributes = DescriptiveModel1::temp30;
+            cm2State:>inputAttributes = DescriptiveModel1::cm2.currentState;
+            :>lambdaPath = "path/to/lambda/function";
+            tempPredicition:>outputAttributes;
+        }
+
+    }
+
+    part def PrescriptiveModel1:>PrescriptiveModel{
+        :>strategies:CustomPrescriptiveStrategy{
+            :>>condition_ = new ComparisonCalc(
+                left = DescriptiveModel1::temp30,
+                right = new TwinAttributeReal(value = 50.0)
+            );
+            tempPrediction :>inputAttributes = P1::s1.tempPredicition;
+            cm2State:>inputAttributes = DescriptiveModel1::cm2.currentState;
+            :>lambdaPath = "path/to/lambda/function";
+        }
+        :>strategies:SendToActuatorStrategy{
+            :>>condition_ = new ComparisonCalc(
+                left = DescriptiveModel1::temp30,
+                right = new TwinAttributeReal(value = 50.0)
+            );
+            :>actuatorTarget = Battery::coolingSystem.fanSpeed;
+            :>commandValue = new TwinAttributeInteger(value = 100);
+            
+        }
+    }
+
+
 }
