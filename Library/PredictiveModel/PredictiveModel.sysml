@@ -1,6 +1,6 @@
 library package PredicitiveLibrary {
 
-    private import TwinDataTypeLibrary::*;
+    private import TwinTypeSystem::*;
     private import TwinStateMachineLibrary::*;
 
 

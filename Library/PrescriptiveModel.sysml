@@ -1,16 +1,16 @@
 library package PrescriptiveModelLibrary {
 
-    private import TwinDataTypeLibrary::*;
+    private import TwinTypeSystem::*;
     private import TwinStateMachineLibrary::*;
     private import PredicitiveLibrary::*;
-
+    private import TwinLibraryPackage::*;
 
     part def startegyCondition {
-        attribute condition : TwinAttributeBoolean[1];
+        attribute condition : TwinBoolean[1];
     }
     part def PrescriptiveStrategy {
         part triggerConfig_ : TriggerConfiguration[1];
-        attribute condition_[0..1] : TwinAttributeBoolean;
+        attribute condition_[0..1] : TwinBoolean;
         attribute inputAttributes[0..*] : TwinAttribute;
     }
 

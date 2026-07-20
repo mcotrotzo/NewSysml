@@ -1,13 +1,17 @@
 library package TwinStateMachineLibrary {
-    private import TwinDataTypeLibrary::*;
+    private import TwinTypeSystem::*;
+    private import TwinLibraryPackage::*;
     
-    abstract part def State {
+    abstract part def State:>TwinLibraryElement {
         attribute local_Attributes : TwinAttribute[0..*];
-        perform action assignActions_:ASSIGN[0..*];
+        action entryAction_;
+        action doAction_;
+        action exitAction_;
+       
     }
 
-    part def TransitionConstraint {
-        attribute triggerCondition_ : TwinAttributeBoolean[1];
+    abstract part def TransitionConstraint:>TwinLibraryElement {
+        attribute triggerCondition_ : TwinBoolean[1];
     }
 
     connection def TransitionConnection {
@@ -18,7 +22,7 @@ library package TwinStateMachineLibrary {
     }
 
 
-    part def TriggerConfiguration {
+    abstract part def TriggerConfiguration:>TwinLibraryElement {
         
     }
 
@@ -33,12 +37,24 @@ library package TwinStateMachineLibrary {
         attribute onChange_ : ScalarValues::Boolean[1];
     }
 
-    part def CustomStateMachine {
-        constant attribute currentState : TwinAttributeString[1];
+    part def CustomStateMachine:>TwinLibraryElement {
+        constant attribute currentState : TwinString[1];
         part states : State[1..*];
         abstract connection transitions : TransitionConnection[0..*];
         part triggerConfig_ : TriggerConfiguration[0..1];
         attribute local_Attributes : TwinAttribute[0..*];
+    }
+
+
+
+    enum def TimeUnit{
+        MICROSECOND;
+        MILLISECOND;
+        HOUR;
+        SECOND;
+        MINUTE;
+        DAY;
+        YEAR;
     }
 
 }

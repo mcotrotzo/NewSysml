@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/csba1184/.claude/plugins/cache/mycelium/hypha/**)",
+      "Bash(find / -maxdepth 6 -iname \"textual-notation\" -type d)",
+      "Bash(find / -xdev -iname \"index.md\" -path \"*textual-notation*\")",
+      "Bash(find / -xdev -type d -iname \"knowledge\")",
+      "Bash(grep -n \"^\\\\`:\\\\`\\\\|typed by\\\\|typing\" /home/csba1184/.claude/plugins/cache/mycelium/hypha/1.1.0/knowledge/textual-notation/index.md)"
+    ]
+  }
+}
