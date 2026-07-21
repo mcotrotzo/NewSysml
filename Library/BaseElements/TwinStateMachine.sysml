@@ -2,52 +2,25 @@ library package TwinStateMachineLibrary {
     private import TwinTypeSystem::*;
     private import TwinLibraryPackage::*;
     
-    abstract part def State:>TwinLibraryElement {
+    private abstract state def State:>TwinLibraryElementStateDef {
         attribute local_Attributes : TwinAttribute[0..*];
-        action entryAction_;
-        action doAction_;
-        action exitAction_;
-       
+        abstract state states:State[0..*];
     }
 
-    abstract part def TransitionConstraint:>TwinLibraryElement {
-        attribute triggerCondition_ : TwinBoolean[1];
+    private part def TriggerConfiguration:>TwinLibraryElement {
     }
 
-    connection def TransitionConnection {
-        end part fromState : State;
-        end part toState : State;
-        attribute local_Attributes : TwinAttribute[0..*];
-        part guardCondition_ : TransitionConstraint[1]; 
-    }
-
-
-    abstract part def TriggerConfiguration:>TwinLibraryElement {
-        
-    }
-
-
-    part def TimeBasedConfiguration :> TriggerConfiguration {
-        attribute triggerInterval_ : ScalarValues::Integer[1];
+    public part def TimeBasedConfiguration :> TriggerConfiguration {
+        attribute triggerInterval_ : TwinInteger[1];
         attribute triggerIntervalUnit_ : TimeUnit[1];
     }
 
-    part def EventBasedConfiguration :> TriggerConfiguration {
+    public part def EventBasedConfiguration :> TriggerConfiguration {
         attribute triggeringAtributes_ : TwinAttribute[0..*];
-        attribute onChange_ : ScalarValues::Boolean[1];
+        attribute onChange_ : TwinBoolean[1];
     }
 
-    part def CustomStateMachine:>TwinLibraryElement {
-        constant attribute currentState : TwinString[1];
-        part states : State[1..*];
-        abstract connection transitions : TransitionConnection[0..*];
-        part triggerConfig_ : TriggerConfiguration[0..1];
-        attribute local_Attributes : TwinAttribute[0..*];
-    }
-
-
-
-    enum def TimeUnit{
+    public enum def TimeUnit{
         MICROSECOND;
         MILLISECOND;
         HOUR;

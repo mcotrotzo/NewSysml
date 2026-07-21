@@ -22,5 +22,9 @@ library package TwinLibraryPackage{
         attribute kind:ScalarValues::String = "KIND";
     }
 
+    abstract state def TwinLibraryElementStateDef{
+        attribute kind:ScalarValues::String = "KIND";
+    }
+
    
 }

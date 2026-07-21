@@ -1,75 +1,58 @@
-library package Test{
+package Test{
 
+    private import TwinLibrary::*;
     private import PhysicalTwinLibrary::*;
-    private import TwinTypeSystem::*;
-    private import PositionLibrary::*;
-    private import TwinStateMachineLibrary::*;
+    
+    
+    state def ControlUnit{
+        in attribute temp:TwinReal = battery.physical.p11.temp;    
+    }
 
+     part battery:Twin{
 
+          part physical :>>physicalTwin{
+            port p11:Sensor:>sensors{
+                attribute temp:TwinReal :>measurements;
 
-    part def Battery:>PhysicalTwin{
-        port p11 :>sensors{
-            attribute temp:TwinReal :>measurements;
-            attribute voltage:TwinReal :>measurements;
-            attribute position:Position :>measurements;
+            }
+
+            state cm1:>controlUnit{
+                
+            }
+
+           
         }
-        
-        port coolingSystem:>actuators{
-            in attribute coolingCommand:TwinBoolean :>commands;
+
+        part :>>shadow{
+            part db1:KeyValueDatabase:>databases{
+                attribute :>>durationInDays = 30;
+            }
         }
-        attribute maxTemp:TwinReal :>constAttributes = 50.0;
 
-        part cm1:>controlUnit{
-            :>>triggerConfig_:TimeBasedConfiguration{
-                :>>triggerInterval_ = 10;
-                :>>triggerIntervalUnit_ = TimeUnit::SECOND;
-            }
-            part idle:>states;
-            part overheating:>states{
-                action :>>entryAction_{
-                    assign coolingSystem.coolingCommand := true;
-                }
-                action :>>exitAction_{
-                    assign coolingSystem.coolingCommand := false;
-                }
+
+    }
+    
+
+    part pv:Twin{
+        part :>>physicalTwin{
+            port p21:>sensors{
+                attribute temp:TwinReal :>measurements;
 
             }
-            
 
-            connection t1:>transitions{
-                end :>>fromState ::> idle;
-                end :>>toState ::> overheating;
-            
-                :>>guardCondition_{
-                    :>>triggerCondition_ = p11.temp > maxTemp;
-                }
+            state cm2:>controlUnit{
+                attribute temp2[1]:TwinReal:>local_Attributes = battery.physical.p11.temp;
             }
+        }
 
-            connection t4:>transitions{
-                end :>>fromState ::> idle;
-                end :>>toState ::> idle;
-            
-                :>>guardCondition_{
-                    :>>triggerCondition_ = p11.temp <= maxTemp;
-                }
-            }
 
-            connection t2:>transitions{
-                end :>>fromState ::> overheating;
-                end :>>toState ::> idle;
-            
-                :>>guardCondition_{
-                    :>>triggerCondition_ = p11.temp <= maxTemp;
-                }
-            }
-            connection t3:>transitions{
-                end :>>fromState ::> overheating;
-                end :>>toState ::> overheating;
-            
-                :>>guardCondition_{
-                    :>>triggerCondition_ = p11.temp > maxTemp;
-                }
+
+        part :>>shadow{
+            part db2:KeyValueDatabase:>databases{
+                attribute :>>durationInDays = 30;
             }
         }
     }
+
+    
 }

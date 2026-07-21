@@ -3,9 +3,14 @@ library package PhysicalTwinLibrary {
     private import TwinStateMachineLibrary::*;
     private import TwinLibraryPackage::*;
 
+
+    
+    
     part def PhysicalTwin:>TwinLibraryElement {
         port sensors [0..*] : Sensor;
-        part controlUnit:CustomStateMachine;
+        abstract state controlUnit:State[0..1]{
+            part triggerConfig_ : TriggerConfiguration[0..1];
+        }
         port actuators [0..*] : Actuator;
         attribute constAttributes [0..*]: TwinAttribute;
     }
