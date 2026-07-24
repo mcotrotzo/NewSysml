@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "anchors": {
+    "FederationSysml::FedBattery": {
+      "gv": {
+        "zoom": 0.5062,
+        "gvMode": "tree"
+      }
+    }
+  }
+}

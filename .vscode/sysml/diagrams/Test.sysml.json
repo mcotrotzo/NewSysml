@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "anchors": {
+    "Test::Battery::cm2": {
+      "stv": {
+        "zoom": 1.533
+      }
+    }
+  }
+}

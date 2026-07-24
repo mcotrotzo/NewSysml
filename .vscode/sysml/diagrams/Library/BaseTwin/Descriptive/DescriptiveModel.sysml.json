@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "anchors": {
+    "DescriptiveModelLibrary::DescriptiveStateMachine": {
+      "gv": {
+        "zoom": 0.3616,
+        "layout": {
+          "DescriptiveModelLibrary::DescriptiveStateMachine": {
+            "x": 378,
+            "y": 28
+          },
+          "__band_state__": {
+            "x": 6,
+            "y": -52,
+            "w": 763,
+            "h": 256
+          },
+          "DescriptiveModelLibrary::DescriptiveState": {
+            "x": 16,
+            "y": 86
+          }
+        },
+        "ports": {},
+        "edgeRoutes": {},
+        "edgeAnchors": {},
+        "gvMode": "tree",
+        "mode": "tab"
+      },
+      "stv": {
+        "zoom": 2.2736
+      }
+    }
+  }
+}
